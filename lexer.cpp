@@ -29,7 +29,7 @@ std::vector<Token> tokenize(std::string input){
     return tokens;
 }
 
-void addToken(std::string *currentString, std::vector<Token> *tokens){
+void addToken(std::string* currentString, std::vector<Token>* tokens){
     if(symbols.count(*currentString) != 0){
         (*tokens).push_back({TokenType::SYMBOL, *currentString});
     }

@@ -8,10 +8,12 @@ int main(){
 
     // INIT shell
     std::string input;
-    while(true){
+    bool alive = true;
+
+    while(alive){
         std::cout << "ScrappyShell> ";
         std::getline(std::cin, input);
-        parse(tokenize(input));
+        parse(tokenize(input), (&alive));
         /*parse*/
         /*
         for(std::pair<TokenType, std::string> p : tokenize(input)){

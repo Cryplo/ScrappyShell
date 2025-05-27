@@ -10,6 +10,6 @@ enum ParseState{
     ECHO
 };
 
-void parse(std::vector<Token> tokens);
+void parse(std::vector<Token> tokens, bool* alive);
 
 #endif

@@ -2,7 +2,12 @@
 #define BUILTINS_H
 
 #include <string>
+#include "lexer.h"
 
 void echo(std::string output);
+
+void quit(bool* alive);
+
+void unknown(Token token);
 
 #endif
