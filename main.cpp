@@ -11,7 +11,7 @@ int main(){
     while(true){
         std::cout << "ScrappyShell> ";
         std::getline(std::cin, input);
-        tokenize(input);
+        parse(tokenize(input));
         /*parse*/
         /*
         for(std::pair<TokenType, std::string> p : tokenize(input)){
