@@ -1,9 +1,6 @@
 #include "lexer.h"
 
-std::map<std::string, TokenType> recognized_lexemes = {
-    {"echo", COMMAND},
-    {"quit", COMMAND}
-}; //TODO: Implement directory navigation (cd, ls, etc...)
+std::set<std::string> symbols = {"|", "&"}; //TODO: Implement directory navigation (cd, ls, etc...)
 //TODO: with the repeat command, there may be an issue with repeat quit
 
 std::vector<Token> tokenize(std::string input){
@@ -33,11 +30,11 @@ std::vector<Token> tokenize(std::string input){
 }
 
 void addToken(std::string *currentString, std::vector<Token> *tokens){
-    if(recognized_lexemes.count(*currentString) != 0){
-        (*tokens).push_back({recognized_lexemes[*currentString], *currentString});
+    if(symbols.count(*currentString) != 0){
+        (*tokens).push_back({TokenType::SYMBOL, *currentString});
     }
     else{
-        (*tokens).push_back({TokenType::STRING, *currentString});
+        (*tokens).push_back({TokenType::WORD, *currentString});
     }
     *currentString = "";
 }

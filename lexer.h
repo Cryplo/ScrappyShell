@@ -3,11 +3,11 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <set>
 
 enum TokenType {
-    COMMAND,
-    STRING, //If unrecognized, default to string
+    WORD,
+    SYMBOL,
 };
 
 struct Token{
@@ -15,7 +15,7 @@ struct Token{
     std::string value;
 };
 
-extern std::map<std::string, TokenType> recognized_lexemes;
+extern std::set<std::string> symbols;
 
 std::vector<Token> tokenize(std::string input);
 
