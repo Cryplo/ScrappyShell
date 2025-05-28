@@ -18,7 +18,9 @@ std::vector<Token> tokenize(std::string input){
             currentString += character;
         }
         else{
-            addToken(&currentString, &tokens);
+            if(currentString != ""){
+                addToken(&currentString, &tokens);
+            }
         }
     }
     //If input doesn't end with space, the last lexeme won't be recorded. Fix this behavior
