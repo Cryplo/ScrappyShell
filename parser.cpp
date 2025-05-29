@@ -1,6 +1,6 @@
-
 #include "parser.h"
 #include "builtins.h"
+#include <unistd.h>
 
 //FSM for parsing?
 void parse(std::vector<Token> tokens, bool* alive){
