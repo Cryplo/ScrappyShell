@@ -1,3 +1,4 @@
+
 #include "parser.h"
 #include "builtins.h"
 
@@ -15,6 +16,10 @@ void parse(std::vector<Token> tokens, bool* alive){
             }
             else if(token.value == "quit"){
                 quit(alive);
+            }
+            //change this later, testing for now
+            else if(token.value == "ls"){
+                pid_t c_pid = fork();
             }
             else{
                 unknown(token);
