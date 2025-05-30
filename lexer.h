@@ -10,6 +10,11 @@ enum TokenType {
     SYMBOL,
 };
 
+enum LexState{
+    NORMAL,
+    STRING
+};
+
 struct Token{
     TokenType type;
     std::string value;

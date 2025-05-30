@@ -1,16 +1,20 @@
 #include "lexer.h"
 
-std::set<std::string> symbols = {"|", "&"}; //TODO: Implement directory navigation (cd, ls, etc...)
-//TODO: with the repeat command, there may be an issue with repeat quit
+std::set<std::string> symbols = {"|", ">"};
 
+//TODO: implement support for lexing quotes
 std::vector<Token> tokenize(std::string input){
-
+    LexState currentState = LexState::NORMAL;
     std::string currentString;
     std::vector<Token> tokens;
 
     // TODO: Fix issue with multiple spaces
     for(char character : input){
-        if(character != ' '){ // TODO: implement all whitespaces
+        if(character == '\'' || character == '\"'){
+            if(currentState == LexState::NORMAL) currentState = LexState::STRING;
+            else currentState = LexState::NORMAL;
+        }
+        else if(character != ' ' || currentState == LexState::STRING){ // TODO: implement all whitespaces
             //A = 65, Z = 90, add 32 to convert to lowercase
             if((int) character >= 65 && (int) character <= 90){
                 character = (char) ((int) character + 32); //convert to lowercase
