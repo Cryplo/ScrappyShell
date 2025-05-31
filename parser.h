@@ -11,7 +11,7 @@ enum ParseState{
     //Echo
     //expect a command
     //expect args
-    CMD, //not actually a good name because it sometimes may be checking for files
+    START, //not actually a good name because it sometimes may be checking for files
     ARGS
 };
 

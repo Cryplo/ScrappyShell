@@ -2,6 +2,7 @@
 #include "builtins.h"
 #include <unistd.h>
 #include <sys/wait.h>
+#include <iostream>
 
 std::set<std::string> cmds = {
     "ls",
@@ -21,15 +22,15 @@ void parse(std::vector<Token> tokens, bool* alive){
     //Nodes can be either a command or a file or an operator?
 
     //write separate logic for echo
-    ParseState state = ParseState::CMD;
+    ParseState state = ParseState::START;
     std::string cmd = "";
     std::vector<std::string> args;
     std::vector<Node*> nodes;
     for(Token token : tokens){
-        if(state == ParseState::CMD){
+        if(state == ParseState::START){
             if(cmds.count(token.value) == 0){
-                unknown(token);
-                break;
+                GenericNode* gn = new GenericNode(token.value);
+                nodes.push_back(gn);
             }
             else{
                 cmd = token.value;
@@ -41,23 +42,52 @@ void parse(std::vector<Token> tokens, bool* alive){
             if(token.type == TokenType::SYMBOL){
                 //save this to a node
                 // TODO: Currently this has object slicing
-                CommandNode cn = CommandNode(cmd, args);
-                nodes.push_back(&cn);
+                CommandNode* cn = new CommandNode(cmd, args);
+                nodes.push_back(cn);
                 //clear cmd and args for next time
                 args.clear();
                 cmd = "";
                 //set parse state to check for cmd again
-                state = ParseState::CMD;
+                state = ParseState::START;
+                //add in an operator node
+                OperatorNode* on = new OperatorNode(token.value);
+                nodes.push_back(on);
             }
             else{
                 args.push_back(token.value);
             }
         }
     }
-    //write more logic for this
-    CommandNode cn = CommandNode(cmd, args);
-    nodes.push_back(&cn);
+    //catch case where command args are not explicitly terminated with a symbol due to end of input
+    if(cmd != ""){
+        CommandNode* cn = new CommandNode(cmd, args);
+        nodes.push_back(cn);
+    }
 
+    for(Node* node : nodes){
+        switch(node->getNodeType()){
+            case NodeType::GENERIC:
+                std::cout << static_cast<GenericNode*>(node)->getString() << std::endl;
+                break;
+            case NodeType::COMMAND:
+                std::cout << static_cast<CommandNode*>(node)->getCommand() << std::endl;
+                break;
+            case NodeType::OPERATOR:
+                std::cout << static_cast<OperatorNode*>(node)->getOperator() << std::endl;
+                break;
+            default:
+                std::cout << "this shouldn't ever happen lol" << std::endl;
+                break;
+        }
+    }
+
+    // prevent memory leak
+    for(Node* node : nodes){
+        delete node;
+    }
+
+    //WORKING FOR COMMANDS
+    /*
     for(Node* node : nodes){
         if(node->getNodeType() == NodeType::COMMAND){
             //use static cast because node is for sure CommandNode
@@ -75,7 +105,7 @@ void parse(std::vector<Token> tokens, bool* alive){
                 waitpid(c_pid, NULL, 0);
             }
         }
-    }
+    }*/
     
     /*
     
