@@ -4,11 +4,74 @@
 #include <sys/wait.h>
 #include <iostream>
 
+Node::Node(){}
+Node::Node(Node* child1, Node* child2){
+            this->child1 = child1;
+            this->child2 = child2;
+        }
+NodeType Node::getNodeType(){return NodeType::BASE;}
+
+CommandNode::CommandNode(
+            std::string cmd,
+            std::vector<std::string> args
+        ){
+            this->cmd = cmd;
+            this->args = args;
+        }
+CommandNode::CommandNode(
+            Node* child1,
+            Node* child2,
+            std::string cmd,
+            std::vector<std::string> args
+        ):Node(child1, child2){
+            this->cmd = cmd;
+            this->args = args;
+        }
+std::string CommandNode::getCommand() {return cmd;}
+std::vector<std::string> CommandNode::getArgs() {return args;}
+NodeType CommandNode::getNodeType(){return NodeType::COMMAND;}
+
+OperatorNode::OperatorNode(
+            std::string opr
+        ){
+            this->opr = opr;
+        }
+OperatorNode::OperatorNode(
+            Node* child1,
+            Node* child2,
+            std::string opr
+        ):Node(child1, child2){
+            this->opr = opr;
+        }
+std::string OperatorNode::getOperator() {return opr;}
+NodeType OperatorNode::getNodeType(){
+    return NodeType::OPERATOR;
+}
+
+GenericNode::GenericNode(
+            std::string str
+        ){
+            this->str = str;
+        }
+GenericNode::GenericNode(
+            Node* child1,
+            Node* child2,
+            std::string str
+        ):Node(child1, child2){
+            this->str = str;
+        }
+std::string GenericNode::getString() {return str;}
+NodeType GenericNode::getNodeType(){
+            return NodeType::GENERIC;
+        }
+
 std::set<std::string> cmds = {
     "ls",
     "grep",
     "pwd"
 };
+
+
 
 //FSM for parsing?
 void parse(std::vector<Token> tokens, bool* alive){
@@ -64,6 +127,16 @@ void parse(std::vector<Token> tokens, bool* alive){
         nodes.push_back(cn);
     }
 
+    //precedence: do operators that don't require execution first (i.e setting output file)
+    //then execute files (i.e piping)
+
+    // prevent memory leak
+    for(Node* node : nodes){
+        delete node;
+    }
+
+
+    /*
     for(Node* node : nodes){
         switch(node->getNodeType()){
             case NodeType::GENERIC:
@@ -80,11 +153,9 @@ void parse(std::vector<Token> tokens, bool* alive){
                 break;
         }
     }
+    */
 
-    // prevent memory leak
-    for(Node* node : nodes){
-        delete node;
-    }
+
 
     //WORKING FOR COMMANDS
     /*

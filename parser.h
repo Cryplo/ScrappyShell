@@ -28,14 +28,9 @@ class Node{
         Node* child1 = nullptr;
         Node* child2 = nullptr;
     public:
-        Node(){}
-        Node(Node* child1, Node* child2){
-            this->child1 = child1;
-            this->child2 = child2;
-        }
-        virtual NodeType getNodeType(){
-            return NodeType::BASE;
-        }
+        Node();
+        Node(Node* child1, Node* child2);
+        virtual NodeType getNodeType();
 };
 
 //One node of the AST contains a cmd and args to run
@@ -48,25 +43,16 @@ class CommandNode : public Node{
         CommandNode(
             std::string cmd,
             std::vector<std::string> args
-        ){
-            this->cmd = cmd;
-            this->args = args;
-        }
+        );
         CommandNode(
             Node* child1,
             Node* child2,
             std::string cmd,
             std::vector<std::string> args
-        ){
-            Node(child1, child2);
-            this->cmd = cmd;
-            this->args = args;
-        }
-        std::string getCommand() {return cmd;}
-        std::vector<std::string> getArgs() {return args;}
-        NodeType getNodeType() override{
-            return NodeType::COMMAND;
-        }
+        );
+        std::string getCommand();
+        std::vector<std::string> getArgs();
+        NodeType getNodeType() override;
 };
 
 class OperatorNode : public Node{
@@ -75,21 +61,14 @@ class OperatorNode : public Node{
     public:
         OperatorNode(
             std::string opr
-        ){
-            this->opr = opr;
-        }
+        );
         OperatorNode(
             Node* child1,
             Node* child2,
             std::string opr
-        ){
-            Node(child1, child2);
-            this->opr = opr;
-        }
-        std::string getOperator() {return opr;}
-        NodeType getNodeType() override{
-            return NodeType::OPERATOR;
-        }
+        );
+        std::string getOperator();
+        NodeType getNodeType() override;
 };
 
 //Not CMD / Operator
@@ -100,21 +79,14 @@ class GenericNode : public Node{
     public:
         GenericNode(
             std::string str
-        ){
-            this->str = str;
-        }
+        );
         GenericNode(
             Node* child1,
             Node* child2,
             std::string str
-        ){
-            Node(child1, child2);
-            this->str = str;
-        }
-        std::string getString() {return str;}
-        NodeType getNodeType() override{
-            return NodeType::GENERIC;
-        }
+        );
+        std::string getString();
+        NodeType getNodeType() override;
 };
 
 extern std::set<std::string> cmds;
