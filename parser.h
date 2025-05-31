@@ -31,6 +31,8 @@ class Node{
         Node();
         Node(Node* child1, Node* child2);
         virtual NodeType getNodeType();
+        void setChild1();
+        void setChild2();
 };
 
 //One node of the AST contains a cmd and args to run

@@ -10,6 +10,8 @@ Node::Node(Node* child1, Node* child2){
             this->child2 = child2;
         }
 NodeType Node::getNodeType(){return NodeType::BASE;}
+void Node::setChild1(){this->child1 = child1;}
+void Node::setChild2(){this->child2 = child2;}
 
 CommandNode::CommandNode(
             std::string cmd,
@@ -128,7 +130,8 @@ void parse(std::vector<Token> tokens, bool* alive){
     }
 
     //precedence: do operators that don't require execution first (i.e setting output file)
-    //then execute files (i.e piping)
+    //then execute files (i.e piping) (order matters in piping)
+
 
     // prevent memory leak
     for(Node* node : nodes){
