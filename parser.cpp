@@ -24,7 +24,7 @@ void parse(std::vector<Token> tokens, bool* alive){
     ParseState state = ParseState::CMD;
     std::string cmd = "";
     std::vector<std::string> args;
-    std::vector<Node> nodes;
+    std::vector<Node*> nodes;
     for(Token token : tokens){
         if(state == ParseState::CMD){
             if(cmds.count(token.value) == 0){
@@ -41,7 +41,8 @@ void parse(std::vector<Token> tokens, bool* alive){
             if(token.type == TokenType::SYMBOL){
                 //save this to a node
                 // TODO: Currently this has object slicing
-                nodes.push_back(CommandNode(cmd, args)); //do I need to allocate heap memory?
+                CommandNode cn = CommandNode(cmd, args);
+                nodes.push_back(&cn);
                 //clear cmd and args for next time
                 args.clear();
                 cmd = "";
@@ -54,21 +55,25 @@ void parse(std::vector<Token> tokens, bool* alive){
         }
     }
     //write more logic for this
-    nodes.push_back(CommandNode(cmd, args));
+    CommandNode cn = CommandNode(cmd, args);
+    nodes.push_back(&cn);
 
-    for(Node node : nodes){
-        //create child process to execute command
-        int c_pid = fork();
-        //child process
-        if(c_pid == 0){
-            char* argsArray[node.args.size() + 1];
-            for(int i = 0; i < node.args.size(); i++) argsArray[i] = (&node.args[i][0]);
-            argsArray[node.args.size()] = nullptr;
-            execvp(argsArray[0], argsArray);
-        }
-        //parent process
-        else{
-            waitpid(c_pid, NULL, 0);
+    for(Node* node : nodes){
+        if(node->getNodeType() == NodeType::COMMAND){
+            //use static cast because node is for sure CommandNode
+            //create child process to execute command
+            int c_pid = fork();
+            //child process
+            if(c_pid == 0){
+                char* argsArray[static_cast<CommandNode*>(node)->getArgs().size() + 1];
+                for(int i = 0; i < static_cast<CommandNode*>(node)->getArgs().size(); i++) argsArray[i] = &(static_cast<CommandNode*>(node)->getArgs()[i][0]);
+                argsArray[static_cast<CommandNode*>(node)->getArgs().size()] = nullptr;
+                execvp(argsArray[0], argsArray);
+            }
+            //parent process
+            else{
+                waitpid(c_pid, NULL, 0);
+            }
         }
     }
     
