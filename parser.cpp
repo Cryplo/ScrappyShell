@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <iostream>
+#include <fstream>
+#include <queue>
+#include<fcntl.h>
 
 Node::Node(){}
 Node::Node(Node* child1, Node* child2){
@@ -10,8 +13,10 @@ Node::Node(Node* child1, Node* child2){
             this->child2 = child2;
         }
 NodeType Node::getNodeType(){return NodeType::BASE;}
-void Node::setChild1(){this->child1 = child1;}
-void Node::setChild2(){this->child2 = child2;}
+Node* Node::getChild1(){return child1;}
+Node* Node::getChild2(){return child2;}
+void Node::setChild1(Node* child1){this->child1 = child1;}
+void Node::setChild2(Node* child2){this->child2 = child2;}
 
 CommandNode::CommandNode(
             std::string cmd,
@@ -131,129 +136,44 @@ void parse(std::vector<Token> tokens, bool* alive){
 
     //precedence: do operators that don't require execution first (i.e setting output file)
     //then execute files (i.e piping) (order matters in piping)
-
-
-    // prevent memory leak
-    for(Node* node : nodes){
-        delete node;
-    }
-
-
-    /*
-    for(Node* node : nodes){
-        switch(node->getNodeType()){
-            case NodeType::GENERIC:
-                std::cout << static_cast<GenericNode*>(node)->getString() << std::endl;
-                break;
-            case NodeType::COMMAND:
-                std::cout << static_cast<CommandNode*>(node)->getCommand() << std::endl;
-                break;
-            case NodeType::OPERATOR:
-                std::cout << static_cast<OperatorNode*>(node)->getOperator() << std::endl;
-                break;
-            default:
-                std::cout << "this shouldn't ever happen lol" << std::endl;
-                break;
+    std::queue<Node*> operatorNodes;
+    std::vector<Node*>::iterator nodeIterator;
+    for(nodeIterator = nodes.begin(); nodeIterator != nodes.end(); ++nodeIterator){
+        if((*nodeIterator)->getNodeType() == NodeType::OPERATOR){
+            //this is heavily assumptive, rewrite later to catch edge cases
+            (*nodeIterator)->setChild1(*(nodeIterator - 1));
+            (*nodeIterator)->setChild2(*(nodeIterator + 1));
+            operatorNodes.push((*nodeIterator));
         }
     }
-    */
 
-
-
-    //WORKING FOR COMMANDS
-    /*
-    for(Node* node : nodes){
-        if(node->getNodeType() == NodeType::COMMAND){
-            //use static cast because node is for sure CommandNode
-            //create child process to execute command
+    while(operatorNodes.size() > 0){
+        OperatorNode* currentOperator = static_cast<OperatorNode*>(operatorNodes.front());
+        operatorNodes.pop();
+        if(currentOperator->getOperator() == ">"){
+            CommandNode* cn = static_cast<CommandNode*>(currentOperator->getChild1());
+            GenericNode* gn = static_cast<GenericNode*>(currentOperator->getChild2());
             int c_pid = fork();
             //child process
             if(c_pid == 0){
-                char* argsArray[static_cast<CommandNode*>(node)->getArgs().size() + 1];
-                for(int i = 0; i < static_cast<CommandNode*>(node)->getArgs().size(); i++) argsArray[i] = &(static_cast<CommandNode*>(node)->getArgs()[i][0]);
-                argsArray[static_cast<CommandNode*>(node)->getArgs().size()] = nullptr;
+                //need to use dup2 instead
+                dup2(open(&((gn->getString())[0]), O_RDWR), 1);
+
+                char* argsArray[cn->getArgs().size() + 1];
+                for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
+                argsArray[cn->getArgs().size()] = nullptr;
                 execvp(argsArray[0], argsArray);
+                exit(0);
             }
             //parent process
             else{
                 waitpid(c_pid, NULL, 0);
             }
         }
-    }*/
-    
-    /*
-    
-
-    for(Token token : tokens){
-        if(state == ParseState::START){
-            //Could rewrite to a map (token.value : func), then count to trigger unknown
-            //Would help builtin func unknown to suggest alternatives
-            if(token.value == "echo"){
-                state = ParseState::ECHO;
-            }
-            else if(token.value == "quit"){
-                quit(alive);
-            }
-            //change this later, testing for now
-            else if(token.value == "ls"){
-                pid_t c_pid = fork();
-                // Is a child process?
-                if(c_pid == 0){
-                    execvp("ls", new char*[2]{const_cast<char*>("ls"), NULL});
-                    exit(0);
-                }
-                // Is a parent process?
-                else{
-                    waitpid(c_pid, NULL, 0);
-                }
-            }
-            else if(token.value == "pwd"){
-                pid_t c_pid = fork();
-                // Is a child process?
-                if(c_pid == 0){
-                    execvp("pwd", new char* [2]{const_cast<char*>("pwd"), NULL});
-                    exit(0);
-                }
-                // Is a parent process?
-                else{
-                    waitpid(c_pid, NULL, 0);
-                }
-            }
-            else if(token.value == "grep"){
-                pid_t c_pid = fork();
-                // Is a child process?
-                if(c_pid == 0){
-                    execvp("pwd", new char* [2]{const_cast<char*>("pwd"), NULL});
-                    exit(0);
-                }
-                // Is a parent process?
-                else{
-                    waitpid(c_pid, NULL, 0);
-                }
-            }
-            else if(token.value == "newshelltest"){
-                pid_t c_pid = fork();
-                // Is a child process?
-                if(c_pid == 0){
-                    execvp("./shell.exe", new char* [2]{const_cast<char*>("./shell.exe"), NULL});
-                    exit(0);
-                }
-                // Is a parent process?
-                else{
-                    waitpid(c_pid, NULL, 0);
-                }
-            }
-            else{
-                unknown(token);
-            }
-        }
-        else{
-            switch(state){
-                case ParseState::ECHO:
-                    echo(token.value);
-                    break;
-            }
-        }
     }
-*/
+
+    // prevent memory leak
+    for(Node* node : nodes){
+        delete node;
+    }
 }
