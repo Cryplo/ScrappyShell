@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <queue>
-#include<fcntl.h>
+#include <fcntl.h>
 
 Node::Node(){}
 Node::Node(Node* child1, Node* child2){
@@ -78,6 +78,12 @@ std::set<std::string> cmds = {
     "pwd"
 };
 
+//{"|", ">", "<"};
+std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern = {
+    {"|", std::make_pair(NodeType::COMMAND, NodeType::COMMAND)},
+    {">", std::make_pair(NodeType::COMMAND, NodeType::GENERIC)},
+    {"<", std::make_pair(NodeType::COMMAND, NodeType::GENERIC)}
+};
 
 
 //FSM for parsing?
@@ -92,6 +98,7 @@ void parse(std::vector<Token> tokens, bool* alive){
     //Nodes can be either a command or a file or an operator?
 
     //write separate logic for echo
+    //need to add inferencing for generic/command as they may be confused
     ParseState state = ParseState::START;
     std::string cmd = "";
     std::vector<std::string> args;
@@ -140,7 +147,14 @@ void parse(std::vector<Token> tokens, bool* alive){
     std::vector<Node*>::iterator nodeIterator;
     for(nodeIterator = nodes.begin(); nodeIterator != nodes.end(); ++nodeIterator){
         if((*nodeIterator)->getNodeType() == NodeType::OPERATOR){
-            //this is heavily assumptive, rewrite later to catch edge cases
+            //logic to check if node pattern matches operators
+            OperatorNode* currentOperator = static_cast<OperatorNode*>(*nodeIterator);
+            if(operatorPattern.count(currentOperator->getOperator()) == 0 ||
+                ((*(nodeIterator-1))->getNodeType() != operatorPattern[currentOperator->getOperator()].first ||
+                (*(nodeIterator+1))->getNodeType() != operatorPattern[currentOperator->getOperator()].second)){
+                    unknown("Something");
+                    return;
+            }
             (*nodeIterator)->setChild1(*(nodeIterator - 1));
             (*nodeIterator)->setChild2(*(nodeIterator + 1));
             operatorNodes.push((*nodeIterator));
@@ -158,7 +172,6 @@ void parse(std::vector<Token> tokens, bool* alive){
             if(c_pid == 0){
                 //need to use dup2 instead
                 dup2(open(&((gn->getString())[0]), O_RDWR), 1);
-
                 char* argsArray[cn->getArgs().size() + 1];
                 for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
                 argsArray[cn->getArgs().size()] = nullptr;

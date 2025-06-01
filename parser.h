@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <utility>
+#include <map>
 #include "lexer.h"
 
 enum ParseState{
@@ -94,6 +96,7 @@ class GenericNode : public Node{
 };
 
 extern std::set<std::string> cmds;
+extern std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern;
 
 void parse(std::vector<Token> tokens, bool* alive);
 

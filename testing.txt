@@ -1,0 +1,14 @@
+total 188
+-rwxrwxrwx 1 cryplo cryplo      0 May 31 21:48 testing.txt
+-rwxrwxrwx 1 cryplo cryplo 172432 May 31 21:48 shell.exe
+-rwxrwxrwx 1 cryplo cryplo   2311 May 31 21:33 parser.h
+-rwxrwxrwx 1 cryplo cryplo   6753 May 31 21:47 parser.cpp
+-rwxrwxrwx 1 cryplo cryplo    501 May 27 14:20 main.cpp
+-rwxrwxrwx 1 cryplo cryplo    425 May 30 12:26 lexer.h
+-rwxrwxrwx 1 cryplo cryplo   1582 May 31 21:23 lexer.cpp
+-rwxrwxrwx 1 cryplo cryplo      0 May 31 21:22 grep
+-rwxrwxrwx 1 cryplo cryplo      0 May 31 21:25 cat
+-rwxrwxrwx 1 cryplo cryplo    251 May 31 21:46 builtins.h
+-rwxrwxrwx 1 cryplo cryplo    618 May 31 21:45 builtins.cpp
+-rwxrwxrwx 1 cryplo cryplo    377 May 31 11:27 README.md
+-rwxrwxrwx 1 cryplo cryplo    184 May 28 20:24 Makefile
