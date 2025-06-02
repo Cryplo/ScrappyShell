@@ -9,6 +9,7 @@
 #include "parser.h"
 
 void keyPressThread(std::vector<std::string> &inputs, std::vector<std::string>::iterator &inputIterator, std::mutex &mtx){
+    /*
     while(true){
         switch(getch()){
             case 72:
@@ -26,7 +27,7 @@ void keyPressThread(std::vector<std::string> &inputs, std::vector<std::string>::
             default:
                 break;
         }
-    }
+    }*/
 }
 
 int main(){
@@ -40,8 +41,8 @@ int main(){
     std::vector<std::string>::iterator inputIterator;
     std::mutex mtx;
     //Can probably use non-blocking input to detect keypresses, but I want to implement multithreading
-    std::thread t(keyPressThread, std::ref(inputs), std::ref(inputIterator), std::ref(mtx));
-    t.detach();
+    //std::thread t(keyPressThread, std::ref(inputs), std::ref(inputIterator), std::ref(mtx));
+    //t.detach();
     while(alive){
         std::cout << "ScrappyShell> ";
         std::getline(std::cin, input);
