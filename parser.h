@@ -95,7 +95,8 @@ class GenericNode : public Node{
         NodeType getNodeType() override;
 };
 
-extern std::set<std::string> cmds;
+extern std::set<std::string> extcmds;
+extern std::set<std::string> builtincmds;
 extern std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern;
 
 void parse(std::vector<Token> tokens, bool* alive);

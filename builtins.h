@@ -8,10 +8,10 @@ void echo(std::string output);
 
 void quit(bool* alive);
 
-void unknown(Token token);
+void unknownString(std::string str);
 
-void unknown(std::string str);
+void unknownToken(Token token);
 
-void unknownCommand(Token token);
+void unknownCommand(std::string str);
 
 #endif
