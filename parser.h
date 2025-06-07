@@ -8,6 +8,15 @@
 #include <map>
 #include "lexer.h"
 
+//operator bindings
+/*
+https://unix.stackexchange.com/questions/163479/pipes-redirection-binding-precedence-with-disjuncts-conjuncts-etc
+> <
+|
+&&, ||
+; &
+*/
+
 enum ParseState{
     //START,
     //Echo
@@ -95,10 +104,33 @@ class GenericNode : public Node{
         NodeType getNodeType() override;
 };
 
+class GenericCommand{
+    public:
+        virtual void execute();
+}
+
+class PipeCommand{
+    public:
+        void execute() override;
+}
+
+//do I need a rein and reout or is one redir enough?
+class RedirCommand{
+    public:
+        void override;
+}
+
+class ExecCommand{
+    public:
+        void execute() override;
+}
+
 extern std::set<std::string> extcmds;
 extern std::set<std::string> builtincmds;
 extern std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern;
 
 void parse(std::vector<Token> tokens, bool* alive);
+
+void executeNode(Node* node);
 
 #endif

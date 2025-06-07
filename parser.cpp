@@ -252,3 +252,9 @@ void parse(std::vector<Token> tokens, bool* alive){
         delete node;
     }
 }
+
+//recursively descent through the tree
+/*
+void executeNode(Node* node){
+
+}*/
