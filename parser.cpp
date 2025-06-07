@@ -72,6 +72,24 @@ NodeType GenericNode::getNodeType(){
             return NodeType::GENERIC;
         }
 
+PipeCommand::PipeCommand(GenericCommand* cmd1, GenericCommand* cmd2){
+    this->cmd1 = cmd1;
+    this->cmd2 = cmd2;
+}
+PipeCommand::execute(){
+    //fork, then execute cmd1 and cmd2 and pipe
+}
+
+RedirCommand::RedirCommand(GenericCommand* cmd, std::string output){
+    this->cmd = cmd;
+    this->output = output;
+}
+RedirCommand::execute(){
+    //assume in child process
+    dup2(open(output, O_RDWR), 1);
+    cmd->execute()
+}
+
 std::set<std::string> extcmds = {
     "ls",
     "grep",

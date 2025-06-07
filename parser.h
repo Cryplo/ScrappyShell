@@ -109,18 +109,32 @@ class GenericCommand{
         virtual void execute();
 }
 
-class PipeCommand{
+class PipeCommand : public GenericCommand{
+    private:
+        GenericCommand* cmd1;
+        GenericCommand* cmd2;
     public:
+        PipeCommand(
+            GenericCommand* cmd1,
+            GenericCommand* cmd2
+        );
         void execute() override;
 }
 
 //do I need a rein and reout or is one redir enough?
-class RedirCommand{
+class RedirCommand : public GenericCommand{
+    private:
+        GenericCommand* cmd;
+        std::string output;
     public:
-        void override;
+        RedirCommand(
+            GenericCommand* cmd
+            std::string output;
+        );
+        void execute() override;
 }
 
-class ExecCommand{
+class ExecCommand : public GenericCommand{
     public:
         void execute() override;
 }
