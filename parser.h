@@ -107,7 +107,7 @@ class GenericNode : public Node{
 class GenericCommand{
     public:
         virtual void execute();
-}
+};
 
 class PipeCommand : public GenericCommand{
     private:
@@ -119,25 +119,28 @@ class PipeCommand : public GenericCommand{
             GenericCommand* cmd2
         );
         void execute() override;
-}
+};
 
 //do I need a rein and reout or is one redir enough?
-class RedirCommand : public GenericCommand{
+class ReoutCommand : public GenericCommand{
     private:
         GenericCommand* cmd;
         std::string output;
     public:
-        RedirCommand(
-            GenericCommand* cmd
-            std::string output;
+        ReoutCommand(
+            GenericCommand* cmd,
+            std::string output
         );
         void execute() override;
-}
+};
 
 class ExecCommand : public GenericCommand{
+    private:
+        CommandNode* cn;
     public:
+        ExecCommand(CommandNode* cn);
         void execute() override;
-}
+};
 
 extern std::set<std::string> extcmds;
 extern std::set<std::string> builtincmds;

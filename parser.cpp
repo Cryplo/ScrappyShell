@@ -72,22 +72,37 @@ NodeType GenericNode::getNodeType(){
             return NodeType::GENERIC;
         }
 
+void GenericCommand::execute(){
+    std::cout << "This should never be reached" << std::endl;
+}
+
 PipeCommand::PipeCommand(GenericCommand* cmd1, GenericCommand* cmd2){
     this->cmd1 = cmd1;
     this->cmd2 = cmd2;
 }
-PipeCommand::execute(){
+void PipeCommand::execute(){
     //fork, then execute cmd1 and cmd2 and pipe
 }
 
-RedirCommand::RedirCommand(GenericCommand* cmd, std::string output){
+ReoutCommand::ReoutCommand(GenericCommand* cmd, std::string output){
     this->cmd = cmd;
     this->output = output;
 }
-RedirCommand::execute(){
+void ReoutCommand::execute(){
     //assume in child process
-    dup2(open(output, O_RDWR), 1);
-    cmd->execute()
+    dup2(open(&(output[0]), O_RDWR), 1);
+    cmd->execute();
+}
+
+ExecCommand::ExecCommand(CommandNode* cn){
+    this->cn = cn;
+}
+
+void ExecCommand::execute(){
+    char* argsArray[cn->getArgs().size() + 1];
+    for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
+    argsArray[cn->getArgs().size()] = nullptr;
+    execvp(argsArray[0], argsArray);
 }
 
 std::set<std::string> extcmds = {
