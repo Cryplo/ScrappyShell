@@ -124,6 +124,58 @@ std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern = {
     {"<", std::make_pair(NodeType::COMMAND, NodeType::GENERIC)}
 };
 
+/*
+End is inclusive
+*/
+//This'll need to be a pointer
+GenericCommand parsePipe(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
+    std::vector<Node*>::iterator nodeIterator;
+    //parse to look for pipe symbol for a node
+    for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
+        switch((*nodeIterator)->getNodeType()){
+            case NodeType::OPERATOR:
+            {
+                if((*nodeIterator)->getOperator() == "|"){
+                    return PipeCommand(
+                        parsePipe(start, nodeIterator - 1, nodes),
+                        parsePipe(nodeIterator + 1, end, nodes)
+                    );
+                }
+            }
+            default:
+                break;
+        }
+    }
+    return parseReout(start, end, nodes);
+}
+
+ReoutCommand parseReout(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
+    std::vector<Node*>::iterator nodeIterator;
+    //parse to look for pipe symbol for a node
+    for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
+        switch((*nodeIterator)->getNodeType()){
+            case NodeType::OPERATOR:
+            {
+                if((*nodeIterator)->getOperator() == ">"){
+                    return ReoutCommand(
+                        parseExec(start, nodeIterator - 1, nodes),
+                        (*(nodeIterator+1))->getString() //assume correct grammar and that this is a string
+                    );
+                }
+            }
+            default:
+                break;
+        }
+    }
+    return parseExec(start, end, nodes);
+}
+
+ExecCommand parseExec(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
+    //there should only be one command here whenever this is called
+    if(start == end && (*start)->getNodeType() == NodeType::COMMAND){
+        return ExecCommand(*start); //kind of scuffed, what if nodes gets deleted? maybe need to malloc
+    }    
+}
 
 //FSM for parsing?
 void parse(std::vector<Token> tokens, bool* alive){
@@ -180,6 +232,9 @@ void parse(std::vector<Token> tokens, bool* alive){
         nodes.push_back(cn);
     }
 
+    parsePipe(nodes.begin(), nodes.end() - 1, nodes);
+
+    /*
     //precedence: do operators that don't require execution first (i.e setting output file)
     //then execute files (i.e piping) (order matters in piping)
     std::queue<Node*> operatorNodes;
@@ -278,7 +333,7 @@ void parse(std::vector<Token> tokens, bool* alive){
             }
         }
     }
-    
+    */
 
     // prevent memory leak
     for(Node* node : nodes){
