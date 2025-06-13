@@ -107,6 +107,7 @@ class GenericNode : public Node{
 class GenericCommand{
     public:
         virtual void execute();
+        virtual ~GenericCommand();
 };
 
 class PipeCommand : public GenericCommand{
@@ -118,6 +119,7 @@ class PipeCommand : public GenericCommand{
             GenericCommand* cmd1,
             GenericCommand* cmd2
         );
+        ~PipeCommand() override;
         void execute() override;
 };
 
@@ -131,6 +133,7 @@ class ReoutCommand : public GenericCommand{
             GenericCommand* cmd,
             std::string output
         );
+        ~ReoutCommand() override;
         void execute() override;
 };
 
@@ -139,6 +142,7 @@ class ExecCommand : public GenericCommand{
         CommandNode* cn;
     public:
         ExecCommand(CommandNode* cn);
+        ~ExecCommand() override;
         void execute() override;
 };
 

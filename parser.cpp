@@ -75,10 +75,18 @@ NodeType GenericNode::getNodeType(){
 void GenericCommand::execute(){
     std::cout << "This should never be reached" << std::endl;
 }
+GenericCommand::~GenericCommand(){
+    
+}
 
 PipeCommand::PipeCommand(GenericCommand* cmd1, GenericCommand* cmd2){
     this->cmd1 = cmd1;
     this->cmd2 = cmd2;
+}
+PipeCommand::~PipeCommand(){
+    delete cmd1;
+    delete cmd2;
+    
 }
 void PipeCommand::execute(){
     //fork, then execute cmd1 and cmd2 and pipe
@@ -87,6 +95,9 @@ void PipeCommand::execute(){
 ReoutCommand::ReoutCommand(GenericCommand* cmd, std::string output){
     this->cmd = cmd;
     this->output = output;
+}
+ReoutCommand::~ReoutCommand(){
+    delete cmd;
 }
 void ReoutCommand::execute(){
     //assume in child process
@@ -97,7 +108,9 @@ void ReoutCommand::execute(){
 ExecCommand::ExecCommand(CommandNode* cn){
     this->cn = cn;
 }
-
+ExecCommand::~ExecCommand(){
+    
+}
 void ExecCommand::execute(){
     char* argsArray[cn->getArgs().size() + 1];
     for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
