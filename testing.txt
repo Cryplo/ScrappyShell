@@ -1,15 +1,14 @@
-total 212
--rwxrwxrwx 1 cryplo cryplo    129 Jun  4 11:32 testing.txt
--rwxrwxrwx 1 cryplo cryplo 183504 Jun  7 10:48 shell.exe
--rwxrwxrwx 1 cryplo cryplo   3410 Jun  7 10:47 parser.h
--rwxrwxrwx 1 cryplo cryplo  10232 Jun  7 10:48 parser.cpp
--rwxrwxrwx 1 cryplo cryplo   1693 Jun  1 20:13 main.cpp
--rwxrwxrwx 1 cryplo cryplo    425 May 30 12:26 lexer.h
--rwxrwxrwx 1 cryplo cryplo   1582 May 31 21:23 lexer.cpp
--rwxrwxrwx 1 cryplo cryplo      0 Jun  3 20:41 grep
--rwxrwxrwx 1 cryplo cryplo    862 May 31 22:46 conio.h
--rwxrwxrwx 1 cryplo cryplo      0 Jun  3 20:41 cat
--rwxrwxrwx 1 cryplo cryplo    266 Jun  4 10:59 builtins.h
--rwxrwxrwx 1 cryplo cryplo    625 Jun  4 10:58 builtins.cpp
--rwxrwxrwx 1 cryplo cryplo    596 Jun  4 20:16 README.md
--rwxrwxrwx 1 cryplo cryplo    184 May 28 20:24 Makefile
+Makefile
+README.md
+builtins.cpp
+builtins.h
+cat
+conio.h
+grep
+lexer.cpp
+lexer.h
+main.cpp
+parser.cpp
+parser.h
+shell.exe
+testing.txt

@@ -238,113 +238,21 @@ void parse(std::vector<Token> tokens, bool* alive){
     }
 
     GenericCommand* gc = parsePipe(nodes.begin(), nodes.end() - 1, nodes);
-    //gc->execute()
-
-    /*
-    //precedence: do operators that don't require execution first (i.e setting output file)
-    //then execute files (i.e piping) (order matters in piping)
-    std::queue<Node*> operatorNodes;
-    std::vector<Node*>::iterator nodeIterator;
-    for(nodeIterator = nodes.begin(); nodeIterator != nodes.end(); ++nodeIterator){
-        if((*nodeIterator)->getNodeType() == NodeType::OPERATOR){
-            //logic to check if node pattern matches operators
-            OperatorNode* currentOperator = static_cast<OperatorNode*>(*nodeIterator);
-            if(operatorPattern.count(currentOperator->getOperator()) == 0 ||
-                ((*(nodeIterator-1))->getNodeType() != operatorPattern[currentOperator->getOperator()].first ||
-                (*(nodeIterator+1))->getNodeType() != operatorPattern[currentOperator->getOperator()].second)){
-                    unknownString("Something");
-                    return;
-            }
-            (*nodeIterator)->setChild1(*(nodeIterator - 1));
-            (*nodeIterator)->setChild2(*(nodeIterator + 1));
-            operatorNodes.push((*nodeIterator));
-        }
+    int c_pid = fork();
+    //child process
+    if(c_pid == 0){
+        gc->execute();
     }
-
-    if(operatorNodes.size() == 0){
-        if(nodes.size() != 0){
-            switch((*nodes.begin())->getNodeType()){
-                case NodeType::COMMAND:
-                {
-                    CommandNode* cn = static_cast<CommandNode*>(*nodes.begin());
-                    if(extcmds.count(cn->getCommand()) != 0){
-                        int c_pid = fork();
-                        //child process
-                        if(c_pid == 0){
-                            //need to use dup2 instead
-                            char* argsArray[cn->getArgs().size() + 1];
-                            for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
-                            argsArray[cn->getArgs().size()] = nullptr;
-                            execvp(argsArray[0], argsArray);
-                            exit(0);
-                        }
-                        //parent process
-                        else{
-                            waitpid(c_pid, NULL, 0);
-                        }
-                    }
-                    else if(builtincmds.count(cn->getCommand()) != 0){
-                        if(cn->getCommand() == "quit"){
-                            quit(alive);
-                            return;
-                        }
-                        else if(cn->getCommand() == "cd"){
-                            std::cout << "not implemented yet" << std::endl;
-                        }
-                        else{
-                            unknownCommand(cn->getCommand());
-                        }
-                    }
-                    break;
-                }
-                case NodeType::OPERATOR:
-                {
-                    std::cout << "Expected a command, not an operator" << std::endl;
-                    break;
-                }
-                case NodeType::GENERIC:
-                {
-                    GenericNode* gn = static_cast<GenericNode*>(*nodes.begin());
-                    unknownCommand(gn->getString());
-                    break;
-                }
-                default:
-                    unknownString("Input");
-                    break;
-            }
-        }
-    }
+    //parent process
     else{
-        while(operatorNodes.size() > 0){
-            OperatorNode* currentOperator = static_cast<OperatorNode*>(operatorNodes.front());
-            operatorNodes.pop();
-            if(currentOperator->getOperator() == ">"){
-                CommandNode* cn = static_cast<CommandNode*>(currentOperator->getChild1());
-                GenericNode* gn = static_cast<GenericNode*>(currentOperator->getChild2());
-                int c_pid = fork();
-                //child process
-                if(c_pid == 0){
-                    //need to use dup2 instead
-                    dup2(open(&((gn->getString())[0]), O_RDWR), 1);
-                    char* argsArray[cn->getArgs().size() + 1];
-                    for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
-                    argsArray[cn->getArgs().size()] = nullptr;
-                    execvp(argsArray[0], argsArray);
-                    exit(0);
-                }
-                //parent process
-                else{
-                    waitpid(c_pid, NULL, 0);
-                }
-            }
-        }
+        waitpid(c_pid, NULL, 0);
     }
-    */
 
     // prevent memory leak
     for(Node* node : nodes){
         delete node;
     }
+    delete gc;
 }
 
 //recursively descent through the tree
