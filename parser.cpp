@@ -259,7 +259,7 @@ void parse(std::vector<Token> tokens, bool* alive){
     std::vector<std::string> args;
     std::vector<Node*> nodes;
     for(Token token : tokens){
-        if(state == ParseState::START){
+        if(state == ParseState::START && token.type != TokenType::SYMBOL){
             if(extcmds.count(token.value) == 0 && builtincmds.count(token.value) == 0){
                 GenericNode* gn = new GenericNode(token.value);
                 nodes.push_back(gn);
@@ -296,6 +296,7 @@ void parse(std::vector<Token> tokens, bool* alive){
         nodes.push_back(cn);
     }
 
+    
     GenericCommand* gc = parseSeparate(nodes.begin(), nodes.end() - 1, nodes);
     int c_pid = fork();
     //child process

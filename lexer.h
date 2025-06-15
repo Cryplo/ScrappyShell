@@ -24,6 +24,6 @@ extern std::set<std::string> symbols;
 
 std::vector<Token> tokenize(std::string input);
 
-void addToken(std::string *currentString, std::vector<Token> *tokens);
+void addToken(std::string currentString, std::vector<Token> *tokens);
 
 #endif
