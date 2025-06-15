@@ -110,6 +110,19 @@ class GenericCommand{
         virtual ~GenericCommand();
 };
 
+class SeparateCommand : public GenericCommand{
+    private:
+        GenericCommand* cmd1;
+        GenericCommand* cmd2;
+    public:
+        SeparateCommand(
+            GenericCommand* cmd1,
+            GenericCommand* cmd2
+        );
+        ~SeparateCommand() override;
+        void execute() override;
+};
+
 class PipeCommand : public GenericCommand{
     private:
         GenericCommand* cmd1;

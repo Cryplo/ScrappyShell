@@ -1,6 +1,6 @@
 #include "lexer.h"
 
-std::set<std::string> symbols = {"|", ">", "<"};
+std::set<std::string> symbols = {"|", ">", "<", ";"};
 
 //TODO: implement support for lexing quotes
 std::vector<Token> tokenize(std::string input){

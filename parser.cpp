@@ -79,6 +79,28 @@ GenericCommand::~GenericCommand(){
     
 }
 
+SeparateCommand::SeparateCommand(GenericCommand* cmd1, GenericCommand* cmd2){
+    this->cmd1 = cmd1;
+    this->cmd2 = cmd2;
+}
+SeparateCommand::~SeparateCommand(){
+    delete cmd1;
+    delete cmd2;
+}
+//already in a child process, just fork and run a new one
+void SeparateCommand::execute(){
+    int c_pid = fork();
+    //child process
+    if(c_pid == 0){
+        cmd1->execute();
+    }
+    //parent process
+    else{
+        waitpid(c_pid, NULL, 0);
+        cmd2->execute();
+    }
+}
+
 PipeCommand::PipeCommand(GenericCommand* cmd1, GenericCommand* cmd2){
     this->cmd1 = cmd1;
     this->cmd2 = cmd2;
@@ -131,6 +153,7 @@ std::set<std::string> builtincmds = {
 };
 
 //{"|", ">", "<"};
+//not needed anymore?
 std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern = {
     {"|", std::make_pair(NodeType::COMMAND, NodeType::COMMAND)},
     {">", std::make_pair(NodeType::COMMAND, NodeType::GENERIC)},
@@ -182,7 +205,7 @@ GenericCommand* parsePipe(std::vector<Node*>::iterator start, std::vector<Node*>
             {
                 if((static_cast<OperatorNode*>(*nodeIterator))->getOperator() == "|"){
                     GenericCommand* pc = new PipeCommand(
-                        parsePipe(start, nodeIterator - 1, nodes),
+                        parseReout(start, nodeIterator - 1, nodes),
                         parsePipe(nodeIterator + 1, end, nodes)
                     );
                     return pc;
@@ -193,6 +216,29 @@ GenericCommand* parsePipe(std::vector<Node*>::iterator start, std::vector<Node*>
         }
     }
     return parseReout(start, end, nodes);
+}
+
+//search for semi-colons
+GenericCommand* parseSeparate(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
+    std::vector<Node*>::iterator nodeIterator;
+    //parse to look for pipe symbol for a node
+    for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
+        switch((*nodeIterator)->getNodeType()){
+            case NodeType::OPERATOR:
+            {
+                if((static_cast<OperatorNode*>(*nodeIterator))->getOperator() == ";"){
+                    GenericCommand* sc = new SeparateCommand(
+                        parsePipe(start, nodeIterator - 1, nodes),
+                        parseSeparate(nodeIterator + 1, end, nodes)
+                    );
+                    return sc;
+                }
+            }
+            default:
+                break;
+        }
+    }
+    return parsePipe(start, end, nodes);
 }
 
 //FSM for parsing?
@@ -250,7 +296,7 @@ void parse(std::vector<Token> tokens, bool* alive){
         nodes.push_back(cn);
     }
 
-    GenericCommand* gc = parsePipe(nodes.begin(), nodes.end() - 1, nodes);
+    GenericCommand* gc = parseSeparate(nodes.begin(), nodes.end() - 1, nodes);
     int c_pid = fork();
     //child process
     if(c_pid == 0){
