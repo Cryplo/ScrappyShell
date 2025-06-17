@@ -12,7 +12,8 @@ std::set<std::string> extcmds = {
     "grep",
     "pwd",
     "echo",
-    "sort"
+    "sort",
+    "cat"
 };
 
 std::set<std::string> builtincmds = {
@@ -167,7 +168,7 @@ ReinCommand::~ReinCommand(){
 }
 void ReinCommand::execute(){
     dup2(open(&(input[0]), O_RDONLY), 0);
-    cmd->execute(); //probably needs to close the input file, no?????
+    cmd->execute();
 }
 
 ExecCommand::ExecCommand(CommandNode* cn){
@@ -200,7 +201,7 @@ GenericCommand* parseExec(std::vector<Node*>::iterator start, std::vector<Node*>
     return nullptr;
 }
 
-GenericCommand* parseReout(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
+GenericCommand* parseRedir(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
     std::vector<Node*>::iterator nodeIterator;
     //parse to look for reout symbol
     for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
@@ -212,6 +213,14 @@ GenericCommand* parseReout(std::vector<Node*>::iterator start, std::vector<Node*
                     ReoutCommand* rc = new ReoutCommand(
                         ec,
                         static_cast<GenericNode*>(*(nodeIterator+1))->getString() //assume correct grammar and that this is a string
+                    );
+                    return rc;
+                }
+                else if(static_cast<OperatorNode*>(*nodeIterator)->getOperator() == "<"){
+                    GenericCommand* ec = parseExec(start, nodeIterator - 1, nodes);
+                    ReinCommand* rc = new ReinCommand(
+                        ec,
+                        static_cast<GenericNode*>(*(nodeIterator+1))->getString()
                     );
                     return rc;
                 }
@@ -235,7 +244,7 @@ GenericCommand* parsePipe(std::vector<Node*>::iterator start, std::vector<Node*>
             {
                 if((static_cast<OperatorNode*>(*nodeIterator))->getOperator() == "|"){
                     GenericCommand* pc = new PipeCommand(
-                        parseReout(start, nodeIterator - 1, nodes),
+                        parseRedir(start, nodeIterator - 1, nodes),
                         parsePipe(nodeIterator + 1, end, nodes)
                     );
                     return pc;
@@ -245,7 +254,7 @@ GenericCommand* parsePipe(std::vector<Node*>::iterator start, std::vector<Node*>
                 break;
         }
     }
-    return parseReout(start, end, nodes);
+    return parseRedir(start, end, nodes);
 }
 
 //search for semi-colons
