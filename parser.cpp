@@ -7,6 +7,19 @@
 #include <queue>
 #include <fcntl.h>
 
+std::set<std::string> extcmds = {
+    "ls",
+    "grep",
+    "pwd",
+    "echo",
+    "sort"
+};
+
+std::set<std::string> builtincmds = {
+    "cd",
+    "quit"
+};
+
 Node::Node(){}
 Node::Node(Node* child1, Node* child2){
             this->child1 = child1;
@@ -155,21 +168,16 @@ void ExecCommand::execute(){
     char* argsArray[cn->getArgs().size() + 1];
     for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
     argsArray[cn->getArgs().size()] = nullptr;
-    execvp(argsArray[0], argsArray);
+    //builtin cmd
+    if(extcmds.count(cn->getArgs()[0]) == 0){
+        if(cn->getArgs()[0] == "cd"){
+            cd(cn->getArgs()[1]);
+        }
+    }
+    else{
+        execvp(argsArray[0], argsArray);
+    }
 }
-
-std::set<std::string> extcmds = {
-    "ls",
-    "grep",
-    "pwd",
-    "echo",
-    "sort"
-};
-
-std::set<std::string> builtincmds = {
-    "cd",
-    "quit"
-};
 
 //{"|", ">", "<"};
 //not needed anymore?
@@ -190,7 +198,7 @@ GenericCommand* parseExec(std::vector<Node*>::iterator start, std::vector<Node*>
 
 GenericCommand* parseReout(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
     std::vector<Node*>::iterator nodeIterator;
-    //parse to look for pipe symbol for a node
+    //parse to look for reout symbol
     for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
         switch((*nodeIterator)->getNodeType()){
             case NodeType::OPERATOR:
@@ -214,10 +222,9 @@ GenericCommand* parseReout(std::vector<Node*>::iterator start, std::vector<Node*
 /*
 End is inclusive
 */
-//This'll need to be a pointer
 GenericCommand* parsePipe(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
     std::vector<Node*>::iterator nodeIterator;
-    //parse to look for pipe symbol for a node
+    //parse to look for pipe symbol
     for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
         switch((*nodeIterator)->getNodeType()){
             case NodeType::OPERATOR:
@@ -260,18 +267,9 @@ GenericCommand* parseSeparate(std::vector<Node*>::iterator start, std::vector<No
     return parsePipe(start, end, nodes);
 }
 
-//FSM for parsing?
 void parse(std::vector<Token> tokens, bool* alive){
-
     //first check for symbols, then separate commands and arguments into nodes
-    //when running nodes, do bottom of tree first, then move up
-    //ls | grep .h > testing.txt
-    //in this example, ls | grep .h is run first (lower), then input is redirected to testing.txt
-    //every node has a command and then args grep ["grep", ".h", NULL]
-
     //Nodes can be either a command or a file or an operator?
-
-    //write separate logic for echo
     //need to add inferencing for generic/command as they may be confused
     ParseState state = ParseState::START;
     std::string cmd = "";
@@ -314,8 +312,6 @@ void parse(std::vector<Token> tokens, bool* alive){
         CommandNode* cn = new CommandNode(cmd, args);
         nodes.push_back(cn);
     }
-
-    
     GenericCommand* gc = parseSeparate(nodes.begin(), nodes.end() - 1, nodes);
     int c_pid = fork();
     //child process
@@ -333,9 +329,3 @@ void parse(std::vector<Token> tokens, bool* alive){
     }
     delete gc;
 }
-
-//recursively descent through the tree
-/*
-void executeNode(Node* node){
-
-}*/

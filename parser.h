@@ -165,6 +165,4 @@ extern std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern;
 
 void parse(std::vector<Token> tokens, bool* alive);
 
-void executeNode(Node* node);
-
 #endif
