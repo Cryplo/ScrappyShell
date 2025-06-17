@@ -126,6 +126,7 @@ void PipeCommand::execute(){
     //reads from the pipe
     else{
         waitpid(c_pid, NULL, 0);
+        close(pipefd[1]);
         dup2(pipefd[0], 0);
         cmd2->execute();
     }
@@ -161,7 +162,8 @@ std::set<std::string> extcmds = {
     "ls",
     "grep",
     "pwd",
-    "echo"
+    "echo",
+    "sort"
 };
 
 std::set<std::string> builtincmds = {
