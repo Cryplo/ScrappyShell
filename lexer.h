@@ -12,7 +12,7 @@ enum TokenType {
 
 enum LexState{
     NORMAL,
-    STRING
+    QUOTE
 };
 
 struct Token{
