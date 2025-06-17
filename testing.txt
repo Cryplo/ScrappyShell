@@ -1,1 +1,14 @@
-/mnt/c/Users/dylan/OneDrive/Documents/ScrappyShell
+total 184
+-rwxrwxrwx 1 cryplo cryplo      0 Jun 16 21:15 testing.txt
+-rwxrwxrwx 1 cryplo cryplo     51 Jun 15 14:05 smth.txt
+-rwxrwxrwx 1 cryplo cryplo 158928 Jun 16 21:14 shell.exe
+-rwxrwxrwx 1 cryplo cryplo   3871 Jun 14 20:28 parser.h
+-rwxrwxrwx 1 cryplo cryplo  10059 Jun 16 21:14 parser.cpp
+-rwxrwxrwx 1 cryplo cryplo   1693 Jun  7 10:48 main.cpp
+-rwxrwxrwx 1 cryplo cryplo    424 Jun 14 20:42 lexer.h
+-rwxrwxrwx 1 cryplo cryplo   1885 Jun 15 14:05 lexer.cpp
+-rwxrwxrwx 1 cryplo cryplo    862 May 31 22:46 conio.h
+-rwxrwxrwx 1 cryplo cryplo    266 Jun  4 10:59 builtins.h
+-rwxrwxrwx 1 cryplo cryplo    625 Jun  4 10:58 builtins.cpp
+-rwxrwxrwx 1 cryplo cryplo    624 Jun 11 23:07 README.md
+-rwxrwxrwx 1 cryplo cryplo    184 May 28 20:24 Makefile

@@ -111,7 +111,24 @@ PipeCommand::~PipeCommand(){
     
 }
 void PipeCommand::execute(){
-    //fork, then execute cmd1 and cmd2 and pipe
+    int pipefd[2]; //file descriptors of the pipe
+    //create a pipe between cmd1 and cmd2
+    pipe(pipefd);
+    //fork, then execute cmd1 and cmd2
+    int c_pid = fork();
+    //child process
+    //writes to the pipe
+    if(c_pid == 0){
+        dup2(pipefd[1], 1);
+        cmd1->execute();
+    }
+    //parent process
+    //reads from the pipe
+    else{
+        waitpid(c_pid, NULL, 0);
+        dup2(pipefd[0], 0);
+        cmd2->execute();
+    }
 }
 
 ReoutCommand::ReoutCommand(GenericCommand* cmd, std::string output){
