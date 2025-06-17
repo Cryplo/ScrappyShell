@@ -136,7 +136,6 @@ class PipeCommand : public GenericCommand{
         void execute() override;
 };
 
-//do I need a rein and reout or is one redir enough?
 class ReoutCommand : public GenericCommand{
     private:
         GenericCommand* cmd;
@@ -147,6 +146,19 @@ class ReoutCommand : public GenericCommand{
             std::string output
         );
         ~ReoutCommand() override;
+        void execute() override;
+};
+
+class ReinCommand : public GenericCommand{
+    private:
+        GenericCommand* cmd;
+        std::string input;
+    public:
+        ReinCommand(
+            GenericCommand* cmd,
+            std::string input
+        );
+        ~ReinCommand() override;
         void execute() override;
 };
 

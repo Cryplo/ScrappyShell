@@ -154,8 +154,20 @@ ReoutCommand::~ReoutCommand(){
 }
 void ReoutCommand::execute(){
     //assume in child process
-    dup2(open(&(output[0]), O_RDWR), 1);
+    dup2(open(&(output[0]), O_WRONLY), 1);
     cmd->execute();
+}
+
+ReinCommand::ReinCommand(GenericCommand* cmd, std::string input){
+    this->cmd = cmd;
+    this->input = input;
+}
+ReinCommand::~ReinCommand(){
+    delete cmd;
+}
+void ReinCommand::execute(){
+    dup2(open(&(input[0]), O_RDONLY), 0);
+    cmd->execute(); //probably needs to close the input file, no?????
 }
 
 ExecCommand::ExecCommand(CommandNode* cn){
@@ -178,14 +190,6 @@ void ExecCommand::execute(){
         execvp(argsArray[0], argsArray);
     }
 }
-
-//{"|", ">", "<"};
-//not needed anymore?
-std::map<std::string, std::pair<NodeType, NodeType>> operatorPattern = {
-    {"|", std::make_pair(NodeType::COMMAND, NodeType::COMMAND)},
-    {">", std::make_pair(NodeType::COMMAND, NodeType::GENERIC)},
-    {"<", std::make_pair(NodeType::COMMAND, NodeType::GENERIC)}
-};
 
 GenericCommand* parseExec(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
     //there should only be one command here whenever this is called
