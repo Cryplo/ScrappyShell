@@ -21,6 +21,8 @@ std::set<std::string> builtincmds = {
     "quit"
 };
 
+bool* alive;
+
 Node::Node(){}
 Node::Node(Node* child1, Node* child2){
             this->child1 = child1;
@@ -186,6 +188,9 @@ void ExecCommand::execute(){
         if(cn->getArgs()[0] == "cd"){
             cd(cn->getArgs()[1]);
         }
+        else if(cn->getArgs()[0] == "quit"){
+            quit(alive);
+        }
     }
     else{
         execvp(argsArray[0], argsArray);
@@ -279,7 +284,8 @@ GenericCommand* parseSeparate(std::vector<Node*>::iterator start, std::vector<No
     return parsePipe(start, end, nodes);
 }
 
-void parse(std::vector<Token> tokens, bool* alive){
+void parse(std::vector<Token> tokens, bool* aliveShell){
+    alive = aliveShell;
     //first check for symbols, then separate commands and arguments into nodes
     //Nodes can be either a command or a file or an operator?
     //need to add inferencing for generic/command as they may be confused

@@ -47,10 +47,10 @@ int main(){
         std::cout << "ScrappyShell> ";
         std::getline(std::cin, input);
         parse(tokenize(input), (&alive));
-        inputs.push_back(input);
-        mtx.lock();
-        inputIterator = inputs.end() - 1;
-        mtx.unlock();
+        //inputs.push_back(input);
+        //mtx.lock();
+        //inputIterator = inputs.end() - 1;
+        //mtx.unlock();
     }
 
 }
