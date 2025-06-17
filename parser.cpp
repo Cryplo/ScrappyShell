@@ -204,22 +204,21 @@ GenericCommand* parseExec(std::vector<Node*>::iterator start, std::vector<Node*>
 GenericCommand* parseRedir(std::vector<Node*>::iterator start, std::vector<Node*>::iterator end, std::vector<Node*> &nodes){
     std::vector<Node*>::iterator nodeIterator;
     //parse to look for reout symbol
-    for(nodeIterator = start; nodeIterator <= end; nodeIterator++){
+    //GO IN REVERSE DIRECTION
+    for(nodeIterator = end; nodeIterator >= start; nodeIterator--){
         switch((*nodeIterator)->getNodeType()){
             case NodeType::OPERATOR:
             {
                 if(static_cast<OperatorNode*>(*nodeIterator)->getOperator() == ">"){
-                    GenericCommand* ec = parseExec(start, nodeIterator - 1, nodes);
                     ReoutCommand* rc = new ReoutCommand(
-                        ec,
+                        parseRedir(start, nodeIterator - 1, nodes),
                         static_cast<GenericNode*>(*(nodeIterator+1))->getString() //assume correct grammar and that this is a string
                     );
                     return rc;
                 }
                 else if(static_cast<OperatorNode*>(*nodeIterator)->getOperator() == "<"){
-                    GenericCommand* ec = parseExec(start, nodeIterator - 1, nodes);
                     ReinCommand* rc = new ReinCommand(
-                        ec,
+                        parseRedir(start, nodeIterator - 1, nodes),
                         static_cast<GenericNode*>(*(nodeIterator+1))->getString()
                     );
                     return rc;

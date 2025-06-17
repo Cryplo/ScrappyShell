@@ -24,3 +24,10 @@ What I've learned from ScrappyShell so far
 - Recursive Descent Parsing
 
 Thanks to MIT's xv6 shell implementation for inspiration
+
+## To-Do
+
+- Implement quit built-in command
+- Implement key press detection
+- Debug issue with sort -r < smth.txt > testing.txt
+- Support parentheses
