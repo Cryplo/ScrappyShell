@@ -31,6 +31,7 @@ void keyPressThread(std::vector<std::string> &inputs, std::vector<std::string>::
 }
 
 int main(){
+    setenv("PATH", "/bin:/usr/bin", 1);
     // INIT shell
     std::string input;
     bool alive = true;
@@ -44,7 +45,7 @@ int main(){
     //std::thread t(keyPressThread, std::ref(inputs), std::ref(inputIterator), std::ref(mtx));
     //t.detach();
     while(alive){
-        std::cout << "ScrappyShell> ";
+        std::cout << "ScrappaaaaayShell> ";
         std::getline(std::cin, input);
         parse(tokenize(input), (&alive));
         //inputs.push_back(input);

@@ -193,7 +193,8 @@ void ExecCommand::execute(){
         }
     }
     else{
-        execvp(argsArray[0], argsArray);
+        execvp("/bin/ls", argsArray);
+        //execvp(argsArray[0], argsArray);
     }
 }
 
