@@ -180,8 +180,10 @@ ExecCommand::~ExecCommand(){
     
 }
 void ExecCommand::execute(){
+    const auto& args = cn->getArgs();
+    std::vector<std::string> copiedArgs(args.begin(), args.end());
     char* argsArray[cn->getArgs().size() + 1];
-    for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = &(cn->getArgs()[i][0]);
+    for(int i = 0; i < cn->getArgs().size(); i++) argsArray[i] = const_cast<char*>(copiedArgs[i].c_str());
     argsArray[cn->getArgs().size()] = nullptr;
     //builtin cmd
     if(extcmds.count(cn->getArgs()[0]) == 0){
@@ -193,8 +195,7 @@ void ExecCommand::execute(){
         }
     }
     else{
-        execvp("/bin/ls", argsArray);
-        //execvp(argsArray[0], argsArray);
+        execvp(argsArray[0], argsArray);
     }
 }
 

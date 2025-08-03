@@ -31,13 +31,15 @@ void keyPressThread(std::vector<std::string> &inputs, std::vector<std::string>::
 }
 
 int main(){
-    setenv("PATH", "/bin:/usr/bin", 1);
+     if (setenv("PATH", "/bin:/usr/bin", 1) != 0) {
+        perror("setenv");
+        exit(1);
+    }
     // INIT shell
     std::string input;
     bool alive = true;
 
     std::vector<std::string> inputs;
-    inputs.push_back("dsfaw");
     //use a mutex to prevent keypressthread from altering
     std::vector<std::string>::iterator inputIterator;
     std::mutex mtx;
@@ -45,7 +47,7 @@ int main(){
     //std::thread t(keyPressThread, std::ref(inputs), std::ref(inputIterator), std::ref(mtx));
     //t.detach();
     while(alive){
-        std::cout << "ScrappaaaaayShell> ";
+        std::cout << "ScrappyShell> ";
         std::getline(std::cin, input);
         parse(tokenize(input), (&alive));
         //inputs.push_back(input);
