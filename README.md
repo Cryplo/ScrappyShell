@@ -30,4 +30,5 @@ Thanks to MIT's xv6 shell implementation for inspiration
 - Implement quit built-in command
 - Implement key press detection
 - Support parentheses
+- Support !
 - Double output redirection behavior is different than bash (sort -r < ahhh.txt > smth.txt > testing.txt)
