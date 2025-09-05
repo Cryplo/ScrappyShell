@@ -13,7 +13,19 @@ std::set<std::string> extcmds = {
     "pwd",
     "echo",
     "sort",
-    "cat"
+    "cat",
+    "mv",
+    "tree",
+    "clear",
+    "mkdir",
+    "rmdir",
+    "touch",
+    "cp",
+    "rm",
+    "date",
+    "whoami",
+    "man"
+
 };
 
 std::set<std::string> builtincmds = {
