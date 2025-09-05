@@ -15,7 +15,7 @@ std::set<std::string> extcmds = {
     "sort",
     "cat",
     "mv",
-    "tree",
+    //"tree",
     "clear",
     "mkdir",
     "rmdir",
@@ -24,7 +24,8 @@ std::set<std::string> extcmds = {
     "rm",
     "date",
     "whoami",
-    "man"
+    "man",
+    "rev"
 
 };
 
